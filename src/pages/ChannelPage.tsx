@@ -58,13 +58,13 @@ export default function ChannelPage(){
     <div className="max-w-[1320px] mx-auto px-4 py-7">
       <VideoPlayer src={ch.streamUrl} poster={ch.logo} />
       <div className="mt-5 flex flex-wrap gap-4 items-start justify-between bg-white/[0.03] border border-white/10 rounded-[24px] p-5">
-        <div className="flex gap-4">
-          <img src="/sm-tv-logo.png" alt="SM TV" className="hidden sm:block w-14 h-14 rounded-2xl object-cover border border-white/10 shadow" />
+        <div className="flex gap-4 items-start">
+          <img src="/sm-tv-logo.png" alt="SM TV" className="w-14 h-14 rounded-2xl object-cover border border-white/20 shadow-[0_6px_16px_rgba(0,0,0,.4)] bg-white/5 shrink-0" />
           <div>
             <h1 className="text-xl md:text-[22px] font-black tracking-[-0.02em] flex items-center gap-2 flex-wrap">
               <span>{ch.name}</span>
               <span className="inline-flex items-center gap-1.5 bg-white text-black rounded-full pl-1 pr-2.5 py-1 shadow-md">
-                <img src="/sm-tv-logo.png" alt="SM TV" className="w-6 h-6 rounded-full object-cover border border-black/10" onError={(e)=>{ (e.target as HTMLImageElement).style.display='none'}} />
+                <img src="/sm-tv-logo.png" alt="SM TV" className="w-6 h-6 rounded-full object-cover border border-black/10" />
                 <span className="text-[11px] font-black tracking-[0.12em]">SM TV</span>
               </span>
             </h1>
