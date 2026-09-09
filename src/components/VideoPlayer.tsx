@@ -55,9 +55,11 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, (_e, data)=>{
         setLoading(false)
-        const lvls: Level[] = (data.levels || hls!.levels || []).map((l:any, i:number)=> ({
+        let lvls: Level[] = (data.levels || hls!.levels || []).map((l:any, i:number)=> ({
           index:i, height: l.height || 0, bitrate: l.bitrate || 0, name: l.height ? labelForHeight(l.height) : `${Math.round((l.bitrate||0)/1000)} kbps`
         }))
+        // filter 360p to 4K only (as requested)
+        lvls = lvls.filter(l=> l.height >= 360 || l.height===0)
         // sort high to low for menu
         lvls.sort((a,b)=> b.height - a.height)
         // if heights 0 (audio only), keep original order
@@ -153,9 +155,9 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
                   </button>
                 )
               }) : (
-                <div className="px-3.5 py-3 text-xs text-zinc-400">No levels • Auto 4K ready if stream provides 2160p</div>
+                <div className="px-3.5 py-3 text-xs text-zinc-400">360p to 4K — Auto quality if stream provides</div>
               )}
-              <div className="px-3 py-1.5 text-[10px] tracking-widest font-bold text-zinc-500 border-t border-white/10 mt-1">4K SUPPORT • REAL HLS</div>
+              <div className="px-3 py-1.5 text-[10px] tracking-widest font-bold text-zinc-500 border-t border-white/10 mt-1">360p → 4K • REAL HLS</div>
             </div>
           )}
         </div>
