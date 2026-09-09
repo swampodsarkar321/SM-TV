@@ -59,11 +59,7 @@ export default function ChannelPage(){
       <VideoPlayer src={ch.streamUrl} poster={ch.logo} />
       <div className="mt-5 flex flex-wrap gap-4 items-start justify-between bg-white/[0.03] border border-white/10 rounded-[24px] p-5">
         <div className="flex gap-4">
-          {ch.logo && !ch.logo.includes('flaticon') && !ch.logo.includes('via.placeholder') ? (
-            <img src={ch.logo} alt={ch.name} className="hidden sm:block w-14 h-14 rounded-2xl bg-white/5 border border-white/10 object-contain p-2" onError={(e)=>{(e.target as HTMLImageElement).style.display='none'}} />
-          ) : (
-            <img src="/sm-tv-logo.png" alt="SM TV" className="hidden sm:block w-14 h-14 rounded-2xl object-cover border border-white/10" />
-          )}
+          <img src="/sm-tv-logo.png" alt="SM TV" className="hidden sm:block w-14 h-14 rounded-2xl object-cover border border-white/10 shadow" />
           <div>
             <h1 className="text-xl md:text-[22px] font-black tracking-[-0.02em] flex items-center gap-2 flex-wrap">
               <span>{ch.name}</span>
