@@ -5,6 +5,7 @@ import ChannelCard from '../components/ChannelCard'
 import { useApp } from '../contexts/AppContext'
 import { useEffect, useRef, useState } from 'react'
 import { useLiveViewers } from '../hooks/useLiveViewers'
+import ShareButtons from '../components/ShareButtons'
 
 export default function ChannelPage(){
   const { channelId } = useParams()
@@ -18,9 +19,26 @@ export default function ChannelPage(){
 
   useEffect(()=>{
     if (ch) {
+      const url = `https://sm-tv-lovat.vercel.app/channel/${ch.id}`
       document.title = `${ch.name} — Watch Live on SM TV`
-      const meta = document.querySelector('meta[name="description"]')
-      if (meta) meta.setAttribute('content', ch.description || `Watch ${ch.name} live on SM TV - Premium OTT streaming.`)
+      const setMeta = (sel:string, attr:string, val:string)=>{
+        let el = document.querySelector(sel) as HTMLMetaElement | null
+        if (!el) { el = document.createElement('meta'); (sel.includes('property') ? el.setAttribute('property', sel.split('"')[1]) : el.setAttribute('name', sel.split('"')[1])); document.head.appendChild(el) }
+        el.setAttribute(attr, val)
+      }
+      setMeta('meta[name="description"]','content', ch.description || `Watch ${ch.name} live on SM TV - Premium OTT streaming.`)
+      setMeta('meta[property="og:title"]','content', `${ch.name} — Watch Live on SM TV`)
+      setMeta('meta[property="og:description"]','content', ch.description || `Watch ${ch.name} live on SM TV`)
+      setMeta('meta[property="og:image"]','content', ch.logo || '/sm-tv-logo.png')
+      setMeta('meta[property="og:url"]','content', url)
+      // JSON-LD for SEO viral
+      const ldId = 'ld-channel'
+      document.getElementById(ldId)?.remove()
+      const script = document.createElement('script')
+      script.id = ldId
+      script.type = 'application/ld+json'
+      script.textContent = JSON.stringify({ "@context":"https://schema.org", "@type":"VideoObject", name: ch.name, description: ch.description || `Watch ${ch.name} live`, thumbnailUrl: ch.logo || '/sm-tv-logo.png', embedUrl: url })
+      document.head.appendChild(script)
     }
     return ()=> { document.title = 'SM TV — Premium OTT | Watch Live Television Online' }
   },[ch?.id, ch?.name])
@@ -70,6 +88,7 @@ export default function ChannelPage(){
             </h1>
             <div className="text-sm text-zinc-400 mt-1 flex flex-wrap items-center gap-2"><span className="bg-white/10 border border-white/10 rounded-full px-2.5 py-1 text-xs font-bold text-zinc-300">{ch.categoryName || ch.categoryId}</span> <span className="w-1 h-1 bg-zinc-600 rounded-full" /> <span className="text-[#ff1840] font-bold">● LIVE</span> <span>•</span> <span className="mono text-xs">{String(Math.floor(secs/60)).padStart(2,'0')}:{String(secs%60).padStart(2,'0')} watching</span> <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-full px-2.5 py-1 text-xs font-bold">👁 {liveViewers} watching</span></div>
             {ch.description && <p className="text-sm text-zinc-300 mt-3 max-w-[680px] leading-relaxed">{ch.description}</p>}
+            <ShareButtons title={`${ch.name} — Watch Live on SM TV`} url={`https://sm-tv-lovat.vercel.app/channel/${ch.id}`} />
           </div>
         </div>
         <button onClick={()=>toggleFavorite(ch.id)} className={`shrink-0 rounded-full px-6 h-11 font-black text-sm border shadow-lg transition ${isFav(ch.id) ? 'bg-[#ff1840] border-[#ff1840] text-white shadow-[0_10px_24px_rgba(255,24,64,.35)]' : 'bg-white text-black border-white hover:bg-zinc-100'}`}>

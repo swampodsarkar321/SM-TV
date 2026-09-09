@@ -82,6 +82,9 @@ export default function Admin(){
   )
 }
 
+async function sendTelegram(title:string, text:string, url?:string, image?:string){
+  try{ await fetch('/api/telegram', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, text, url, image }) }) }catch{}
+}
 function ChannelsTab({ data }: { data: Record<string, any>}){
   const [form, setForm] = useState({ id:'', name:'', logo:'', streamUrl:'', categoryId:'sports', featured:false, enabled:true })
   const [editId, setEditId] = useState<string | null>(null)
@@ -89,6 +92,8 @@ function ChannelsTab({ data }: { data: Record<string, any>}){
     if (!form.id || !form.name || !form.streamUrl) return alert('id, name, streamUrl required')
     const payload = { name: form.name, logo: form.logo, streamUrl: form.streamUrl, categoryId: form.categoryId, featured: form.featured, enabled: form.enabled, order: data[form.id]?.order || Date.now() }
     await set(ref(db, `channels/${form.id}`), payload)
+    // Telegram viral share
+    await sendTelegram(`🆕 New Channel: ${form.name}`, `Category: ${form.categoryId}`, `https://sm-tv-lovat.vercel.app/channel/${form.id}`, form.logo || '/sm-tv-logo.png')
     setForm({ id:'', name:'', logo:'', streamUrl:'', categoryId:'sports', featured:false, enabled:true }); setEditId(null)
   }
   const del = async(id:string)=>{ if(confirm('Delete '+id+'?')) await remove(ref(db, `channels/${id}`)) }
@@ -346,6 +351,7 @@ function NotificationsTab({ data }: { data: Record<string, any>}){
   const send = async()=>{
     if (!title) return
     await push(ref(db, 'notifications'), { title, body, time: new Date().toISOString(), read:false, type:'announcement' })
+    await sendTelegram(title, body, 'https://sm-tv-lovat.vercel.app', '/sm-tv-logo.png')
     setTitle(''); setBody('')
   }
   return (
