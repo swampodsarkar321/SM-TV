@@ -28,8 +28,8 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
   useEffect(()=>{
     setErr(null); setLoading(true); setLevels([]); setCurrent(-1); setAuto(true)
     let safeSrc = src
-    // Always proxy via vercel api to handle CORS & Mixed Content (http->https) for all streams
-    if (safeSrc?.startsWith('http') && typeof location !== 'undefined') {
+    // Only proxy http (Mixed Content) - https go.skym3u.dev direct works, proxy causes 403
+    if (safeSrc?.startsWith('http://') && typeof location !== 'undefined' && location.protocol==='https:') {
       safeSrc = `/api/proxy?url=${encodeURIComponent(safeSrc)}`
     }
     const video = videoRef.current
@@ -43,10 +43,9 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
         maxBufferLength: 30,
         capLevelToPlayerSize: false,
         xhrSetup: (xhr, url) => {
-          // proxy all http/https sub-requests via api to handle CORS & http->https
-          if (url.startsWith('http') && typeof location !== 'undefined') {
-            const proxied = `/api/proxy?url=${encodeURIComponent(url)}`
-            xhr.open('GET', proxied, true)
+          // proxy only http segments (Mixed Content) - https direct
+          if (url.startsWith('http://') && typeof location !== 'undefined' && location.protocol==='https:') {
+            xhr.open('GET', `/api/proxy?url=${encodeURIComponent(url)}`, true)
           }
         }
       })

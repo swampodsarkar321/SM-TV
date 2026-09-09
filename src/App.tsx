@@ -11,7 +11,6 @@ import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
-import Landing from './pages/Landing'
 import { useRealtimeData } from './hooks/useRealtimeData'
 import MaintenanceScreen from './components/MaintenanceScreen'
 import OfflineBanner from './components/OfflineBanner'
@@ -52,8 +51,7 @@ export default function App(){
         ) : (
           <main className="pb-10">
             <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="/live" element={<LiveTV />} />
               <Route path="/category/:categoryId" element={<CategoryPage />} />
               <Route path="/channel/:channelId" element={<ChannelPage />} />
