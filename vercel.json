@@ -1,14 +1,5 @@
 {
   "rewrites": [
-    { "source": "/__m3u/:path*", "destination": "https://go.skym3u.dev/:path*" }
-  ],
-  "headers": [
-    {
-      "source": "/__m3u/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" }
-      ]
-    }
+    { "source": "/__m3u/:path*", "destination": "/api/m3u" }
   ]
 }

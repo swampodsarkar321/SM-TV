@@ -28,24 +28,28 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
   useEffect(()=>{
     setErr(null); setLoading(true); setLevels([]); setCurrent(-1); setAuto(true)
     let safeSrc = src
-    // Mixed Content fix: ensure https on https site
-    if (safeSrc?.startsWith('http://') && location.protocol==='https:') {
-      safeSrc = safeSrc.replace('http://', 'https://')
+    const isHttp = safeSrc?.startsWith('http://')
+    // Mixed Content fix: proxy http via vercel api to https
+    if (isHttp && typeof location !== 'undefined' && location.protocol==='https:') {
+      safeSrc = `/api/proxy?url=${encodeURIComponent(safeSrc)}`
     }
     const video = videoRef.current
     if (!video || !safeSrc) { setLoading(false); setErr('Stream Unavailable'); return }
     let hls: Hls | null = null
-    const onError = ()=>{
-      // if https upgrade failed, try http via warning
-      if (safeSrc.startsWith('https://') && src.startsWith('http://')) {
-        setErr('This stream is HTTP only and blocked on HTTPS. Try http:// site or enable mixed content.')
-      } else {
-        setLoading(false); setErr('Stream temporarily unavailable')
-      }
-    }
+    const onError = ()=>{ setLoading(false); setErr('Stream temporarily unavailable') }
 
     if (safeSrc.includes('.m3u8') && Hls.isSupported()) {
-      hls = new Hls({ enableWorker:true, maxBufferLength: 30, capLevelToPlayerSize: false })
+      hls = new Hls({
+        enableWorker:true,
+        maxBufferLength: 30,
+        capLevelToPlayerSize: false,
+        xhrSetup: (xhr, url) => {
+          // proxy any http sub-requests (segments) via https api
+          if (url.startsWith('http://') && typeof location !== 'undefined' && location.protocol==='https:') {
+            xhr.open('GET', `/api/proxy?url=${encodeURIComponent(url)}`, true)
+          }
+        }
+      })
       hlsRef.current = hls
       hls.loadSource(safeSrc)
       hls.attachMedia(video)

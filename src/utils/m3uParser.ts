@@ -43,12 +43,7 @@ export function parseM3U(text: string): Channel[] {
       let c = 1
       while (channels.some(x => x.id === uid)) uid = `${id}-${c++}`
       let stream = line.trim()
-      // Mixed Content fix: upgrade http to https for Vercel HTTPS site
-      if (stream.startsWith('http://')) {
-        const httpsTry = stream.replace('http://', 'https://')
-        // keep https version (browser will block http on https site)
-        stream = httpsTry
-      }
+      // keep original http; VideoPlayer will proxy via /api/proxy if needed (Mixed Content fix)
       channels.push({
         id: uid,
         name: pending.name || uid,
@@ -71,13 +66,11 @@ export const M3U_URL = 'https://go.skym3u.dev/ow52.m3u?t=3061&s=d87'
 export const M3U_PROXY_PATH = '/__m3u/ow52.m3u'
 
 export async function fetchM3U(url = M3U_URL): Promise<Channel[]> {
-  const isDev = (import.meta as any).env?.DEV
   const candidates = [
-    // vercel/vite proxy (works in both dev+prod via vercel.json)
+    // vercel api route (always works, CORS added)
+    `/api/m3u`,
     `${M3U_PROXY_PATH}?t=3061&s=d87`,
-    // direct (skip in prod if proxy exists to avoid CORS, but keep as fallback)
-    ...(isDev ? [url] : []),
-    // fallback proxies
+    url,
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   ]
