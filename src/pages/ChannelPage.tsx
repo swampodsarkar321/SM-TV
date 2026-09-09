@@ -65,10 +65,12 @@ export default function ChannelPage(){
             <img src="/sm-tv-logo.png" alt="SM TV" className="hidden sm:block w-14 h-14 rounded-2xl object-cover border border-white/10" />
           )}
           <div>
-            <h1 className="text-xl md:text-[22px] font-black tracking-[-0.02em] flex items-center gap-2">
-              {ch.name}
-              <img src="/sm-tv-logo.png" alt="SM TV" className="w-7 h-7 rounded-full object-cover border border-white/20 shadow" title="SM TV" />
-              <span className="hidden sm:inline text-[10px] font-black tracking-[0.12em] bg-white/10 border border-white/15 rounded-full px-2 py-1 text-zinc-300">SM TV</span>
+            <h1 className="text-xl md:text-[22px] font-black tracking-[-0.02em] flex items-center gap-2 flex-wrap">
+              <span>{ch.name}</span>
+              <span className="inline-flex items-center gap-1.5 bg-white text-black rounded-full pl-1 pr-2.5 py-1 shadow-md">
+                <img src="/sm-tv-logo.png" alt="SM TV" className="w-6 h-6 rounded-full object-cover border border-black/10" onError={(e)=>{ (e.target as HTMLImageElement).style.display='none'}} />
+                <span className="text-[11px] font-black tracking-[0.12em]">SM TV</span>
+              </span>
             </h1>
             <div className="text-sm text-zinc-400 mt-1 flex flex-wrap items-center gap-2"><span className="bg-white/10 border border-white/10 rounded-full px-2.5 py-1 text-xs font-bold text-zinc-300">{ch.categoryName || ch.categoryId}</span> <span className="w-1 h-1 bg-zinc-600 rounded-full" /> <span className="text-[#ff1840] font-bold">● LIVE</span> <span>•</span> <span className="mono text-xs">{String(Math.floor(secs/60)).padStart(2,'0')}:{String(secs%60).padStart(2,'0')} watching</span> <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-full px-2.5 py-1 text-xs font-bold">👁 {liveViewers} watching</span></div>
             {ch.description && <p className="text-sm text-zinc-300 mt-3 max-w-[680px] leading-relaxed">{ch.description}</p>}
