@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #07070b;
+  --color-surface: #12121a;
+  --color-card: #1b1b27;
+  --color-border: #2a2a3a;
+  --color-accent: #ff1840;
+}
+
+* { scrollbar-width: thin; scrollbar-color: #2e2e46 transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background:#2e2e46; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(255,24,64,0.12), transparent 60%),
+    radial-gradient(900px 500px at 10% 0%, rgba(92,63,255,0.10), transparent 60%),
+    #07070b;
+  color: #fff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* shimmer */
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.shimmer { position:relative; overflow:hidden; background:linear-gradient(180deg,#1a1a28,#141422); }
+.shimmer::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent); animation: shimmer 1.6s infinite; }
+
+.no-scrollbar::-webkit-scrollbar{ display:none; }
+.no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+
+/* premium card hover */
+.card-hover { transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .35s; }
+.card-hover:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 14px 36px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); }
+
+/* live pulse */
+@keyframes livePulse { 0%,100% { opacity:1; transform:scale(1)} 50% {opacity:.7; transform:scale(.92)} }
+.live-dot { animation: livePulse 1.4s infinite; }
+
+/* glass */
+.glass { backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+
+/* gradient text */
+.gradient-text { background: linear-gradient(90deg,#fff 0%, #ffb3c2 100%); -webkit-background-clip:text; -webkit-text-fill-color: transparent; }
