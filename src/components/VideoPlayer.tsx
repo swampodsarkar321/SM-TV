@@ -27,15 +27,27 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
 
   useEffect(()=>{
     setErr(null); setLoading(true); setLevels([]); setCurrent(-1); setAuto(true)
+    let safeSrc = src
+    // Mixed Content fix: ensure https on https site
+    if (safeSrc?.startsWith('http://') && location.protocol==='https:') {
+      safeSrc = safeSrc.replace('http://', 'https://')
+    }
     const video = videoRef.current
-    if (!video || !src) { setLoading(false); setErr('Stream Unavailable'); return }
+    if (!video || !safeSrc) { setLoading(false); setErr('Stream Unavailable'); return }
     let hls: Hls | null = null
-    const onError = ()=>{ setLoading(false); setErr('Stream temporarily unavailable') }
+    const onError = ()=>{
+      // if https upgrade failed, try http via warning
+      if (safeSrc.startsWith('https://') && src.startsWith('http://')) {
+        setErr('This stream is HTTP only and blocked on HTTPS. Try http:// site or enable mixed content.')
+      } else {
+        setLoading(false); setErr('Stream temporarily unavailable')
+      }
+    }
 
-    if (src.includes('.m3u8') && Hls.isSupported()) {
+    if (safeSrc.includes('.m3u8') && Hls.isSupported()) {
       hls = new Hls({ enableWorker:true, maxBufferLength: 30, capLevelToPlayerSize: false })
       hlsRef.current = hls
-      hls.loadSource(src)
+      hls.loadSource(safeSrc)
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, (_e, data)=>{
         setLoading(false)
@@ -58,12 +70,12 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
         }
       })
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = src
+      video.src = safeSrc
       video.addEventListener('loadeddata', ()=> setLoading(false))
       video.addEventListener('error', onError)
       video.play().catch(()=>{})
     } else {
-      video.src = src
+      video.src = safeSrc
       video.addEventListener('error', onError)
       video.addEventListener('canplay', ()=> setLoading(false))
     }
