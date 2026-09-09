@@ -67,11 +67,12 @@ export const M3U_PROXY_PATH = '/__m3u/ow52.m3u'
 
 export async function fetchM3U(url = M3U_URL): Promise<Channel[]> {
   const candidates = [
-    // vercel api route (always works, CORS added)
+    // direct first (go.skym3u.dev sends CORS * so browser can fetch directly)
+    url,
     `/api/m3u`,
     `${M3U_PROXY_PATH}?t=3061&s=d87`,
-    url,
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   ]
   let lastErr: any = null
