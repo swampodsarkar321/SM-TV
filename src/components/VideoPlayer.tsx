@@ -28,9 +28,8 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
   useEffect(()=>{
     setErr(null); setLoading(true); setLevels([]); setCurrent(-1); setAuto(true)
     let safeSrc = src
-    const isHttp = safeSrc?.startsWith('http://')
-    // Mixed Content fix: proxy http via vercel api to https
-    if (isHttp && typeof location !== 'undefined' && location.protocol==='https:') {
+    // Always proxy via vercel api to handle CORS & Mixed Content (http->https) for all streams
+    if (safeSrc?.startsWith('http') && typeof location !== 'undefined') {
       safeSrc = `/api/proxy?url=${encodeURIComponent(safeSrc)}`
     }
     const video = videoRef.current
@@ -44,9 +43,10 @@ export default function VideoPlayer({ src, poster }: { src: string, poster?: str
         maxBufferLength: 30,
         capLevelToPlayerSize: false,
         xhrSetup: (xhr, url) => {
-          // proxy any http sub-requests (segments) via https api
-          if (url.startsWith('http://') && typeof location !== 'undefined' && location.protocol==='https:') {
-            xhr.open('GET', `/api/proxy?url=${encodeURIComponent(url)}`, true)
+          // proxy all http/https sub-requests via api to handle CORS & http->https
+          if (url.startsWith('http') && typeof location !== 'undefined') {
+            const proxied = `/api/proxy?url=${encodeURIComponent(url)}`
+            xhr.open('GET', proxied, true)
           }
         }
       })
