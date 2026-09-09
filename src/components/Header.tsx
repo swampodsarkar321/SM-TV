@@ -61,7 +61,10 @@ export default function Header(){
       <div className="max-w-[1320px] mx-auto px-4 h-[62px] flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2.5 group">
           <img src="/sm-tv-logo.png" alt="SM TV" className="w-9 h-9 rounded-xl object-cover border border-white/15 shadow-[0_8px_20px_rgba(0,0,0,.35)] group-hover:shadow-[0_10px_28px_rgba(0,0,0,.45)] transition bg-white/5" />
-          <span className="font-black tracking-[0.16em] text-[15px]">SM<span className="text-[#ff1840]"> TV</span></span>
+          <div className="leading-none">
+            <div className="font-black tracking-[0.16em] text-[15px]">SM<span className="text-[#ff1840]"> TV</span></div>
+            <div className="text-[9px] tracking-[0.14em] font-bold text-zinc-400 -mt-0.5 hidden sm:block">all in one TV platform</div>
+          </div>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1 ml-2">

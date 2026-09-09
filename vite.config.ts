@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'SM TV - Premium OTT',
+        name: 'SM TV all in one TV platform',
         short_name: 'SM TV',
-        description: 'Watch SM TV - Premium OTT Web App. Same Firebase as Android.',
+        description: 'SM TV all in one TV platform - Watch Live TV Online',
         theme_color: '#0a0a0f',
         background_color: '#0a0a0f',
         display: 'standalone',
